@@ -1,14 +1,13 @@
 // SLA Data
-var sla = null;
+sla = null
 const request = async () => {
-  const response = await fetch('sla');
-  const json = await response.json();
-  sla = json[0];
-  console.log("sla data: ");
-  console.log(sla);
+  const response = await fetch('sla')
+  sla = await response.json();
+  sla = sla[0]
 }
 request();
 
+// Charts colors
 const chartColors = [
   (a=1) => `rgba( 54, 162, 235, ${a})`,
   (a=1) => `rgba( 75, 192, 192, ${a})`,
@@ -19,22 +18,44 @@ const chartColors = [
   (a=1) => `rgba(255, 205,  86, ${a})`
 ]
 
-fetch('top.csv') // Open log
-.then(response => response.text()) // Read it
-.then(data => data.split('\n').map(x => x.split(','))) // Split in lines and split lines in columns
-.then(data => {
-  const n = 100 // Number of dots
+// This function loops for ever
+function loop(charts) {
+  fetch('top.csv') // Fetches data
+  .then(response => response.text()) // Read it
+  .then(data => data.split('\n').map(x => x.split(','))) // Divide in lines and lines in columns
+  .then(data => {
+    if (!charts) {
+      paint(data);
+    } else { //We already have charts, lets update values
+      for (const chart of charts) {
+        const index = chart.meta.index
+        if (!chart) continue;
+        chart.datasets[0].data = data.map(row => row[index]) // change the values
+        chart.update() // update them
+      }
+    }
+    return charts
+  })
+  .then(charts => {
+    plot_lines()
+    setTimeout(_ => loop(charts), 3000) // update every 3 seconds
+  })
+  .catch(error => {
+    console.error('An error ocurred:', error)
+  })
+}
+loop(null)
 
+// Paint charts (should only run once)
+function paint (data) {
   const headers = data[0].slice(1) // Remove the first header column (timestamp)
   // Remove headers line and the empty last one and grab the first 100
-  data = data.slice(1, -1).slice(-n)
+  data = data = data.slice(1, -1)
 
-  // Time will be shown in seconds then we divide it by 1000
-  //  before building the X axis
-  const start = Math.round(data[0][0]/1000)
-  const xAxis = data.map(row => Math.round(row[0]/1000) - start)
+  // X Axis
+  const xAxis = data.map((row, index) => index)
 
-  // We will create a chart for each header:
+  // create a chart for each header
   const charts = headers.map((header, index) => {
     const canvas = document.getElementById('chart-'+header)
     if (!canvas) return null
@@ -51,7 +72,7 @@ fetch('top.csv') // Open log
           backgroundColor: color(0.5),
           borderColor: color(),
           borderWidth: 1,
-          pointRadius: 2 // Size of the dots
+          pointRadius: 2 // dots' radius
         }]
       },
       options: {
@@ -66,7 +87,7 @@ fetch('top.csv') // Open log
             },
             scaleLabel: {
               display: true,
-              labelString: 'seconds'
+              labelString: 'nth instruction'
             }
           }],
           yAxes: [{
@@ -79,44 +100,34 @@ fetch('top.csv') // Open log
               labelString: header
             }
           }]
-        },
-        animation: {
-          onComplete: function(animation) {
-              plot_lines(animation)
-          }
         }
       }
     }
-    // If we have more than 200 dots then we deactivate lines and animations
-    // to avoid slowing or crashing the dashboard
-    if (n > 199) {
-      options.options.elements = {
-        line: {
-          tension: 0
-        }
-      },
-      options.options.animation = {
-        duration: 0
-      },
-      options.options.hover = {
-        animationDuration: 0
-      },
-      options.options.responsiveAnimationDuration = 0
+
+    // Disable effects/animations
+    options.options.elements = {
+      line: {
+        tension: 0
+      }
+    },
+    options.options.animation = {
+      duration: 0
+    },
+    options.options.hover = {
+      animationDuration: 0
+    },
+    options.options.responsiveAnimationDuration = 0
+
+    const chart = new Chart(canvas.getContext('2d'), options)
+    chart.meta = { // recursion metadata
+      index
     }
-
-    return new Chart(canvas.getContext('2d'), options)
   })
-  var charts_loaded = true;
-  return charts
-})
-.then(charts => {
-  console.log('done', charts)
-})
-.catch(error => {
-  console.error('An error ocurred:', error)
-})
+}
 
-function plot_lines (animation) {
+// Plot lines over the charts
+function plot_lines() {
+  if (sla == null) return;
   var execTime_line = new Graph({
     canvasId: 'chart-execTime (ms)',
     minX: -10,

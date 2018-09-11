@@ -1,18 +1,35 @@
+<!DOCTYPE html>
 <html>
-  <style>
-    #chart-container {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    #chart-container > canvas {
-      height: 400px;
-    }
-  </style>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Spark ART Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.diogo.site/projects/excalibur_template/assets/css/main.css">
+    <style>
+      #chart-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      #chart-container > canvas {
+        height: 400px;
+      }
+    </style>
+  </head>
   <body>
+    <header id="header">
+        <nav id="side-menu">
+            <label for="show-menu" id="menu-button">Menu</label>
+            <input id="show-menu" role="button" type="checkbox">
+            <ul id="menu">
+                <li><a href="#" class="current">Stats</a></li>
+            </ul>
+        </nav>
+        <h1>ART Dashboard</h1>
+    </header>
     <div id="chart-container">
       <canvas id="chart-ingestionRate"></canvas>
       <canvas id="chart-Accuracy (%)"></canvas>
@@ -24,5 +41,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <script src="equation-plotter.js"></script>
     <script src="chart.js"></script>
+    <footer id="footer">
+      <p><a href="https://www.diogo.site/projects/excalibur_template/">ART Dashboard</a> and <a href="https://github.com/diogogithub/excalibur_template/">Excalibur template</a> by <a href="https://www.diogo.site/">Diogo Cordeiro</a> - <a href="https://www.inesc-id.pt/">INESC-ID</a>
+    </footer>
   </body>
 </html>
