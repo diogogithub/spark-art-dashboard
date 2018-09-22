@@ -17,6 +17,11 @@
       #chart-container > canvas {
         height: 400px;
       }
+      #ingestion-rate-box {
+        position: fixed;
+        top: 1em;
+        right: 25em;
+      }
     </style>
   </head>
   <body>
@@ -38,11 +43,16 @@
       <canvas id="chart-Delay (ms)"></canvas>
       <canvas id="chart-execTime (ms)"></canvas>
     </div>
+    <div id="ingestion-rate-box">
+      <label for="ingestion-rate-controller">Ingestion Rate</label>
+      <input id="ingestion-rate" type="number">
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
-    <script src="equation-plotter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
     <script src="chart.js"></script>
+    <script src="ingestion-rate.js"></script>
     <footer id="footer">
-      <p><a href="https://www.diogo.site/projects/excalibur_template/">ART Dashboard</a> and <a href="https://github.com/diogogithub/excalibur_template/">Excalibur template</a> by <a href="https://www.diogo.site/">Diogo Cordeiro</a> - <a href="https://www.inesc-id.pt/">INESC-ID</a>
+      <p><a href="https://github.com/diogogithub/spark-art-dashboard">ART Dashboard</a> and <a href="https://github.com/diogogithub/excalibur_template/">Excalibur template</a> by <a href="https://www.diogo.site/">Diogo Cordeiro</a> - <a href="https://www.inesc-id.pt/">INESC-ID</a>
     </footer>
   </body>
 </html>

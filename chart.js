@@ -20,13 +20,13 @@ const chartColors = [
 
 // This function loops for ever
 function loop(charts) {
-  fetch('top.csv') // Fetches data
+  fetch('http://localhost:4870') // Fetches data
   .then(response => response.text()) // Read it
   .then(data => data.split('\n').map(x => x.split(','))) // Divide in lines and lines in columns
   .then(data => {
     if (!charts) {
       paint(data);
-    } else { //We already have charts, lets update values
+    } else { // We already have charts, lets update values
       for (const chart of charts) {
         const index = chart.meta.index
         if (!chart) continue;
@@ -37,7 +37,6 @@ function loop(charts) {
     return charts
   })
   .then(charts => {
-    plot_lines()
     setTimeout(_ => loop(charts), 3000) // update every 3 seconds
   })
   .catch(error => {
@@ -118,49 +117,59 @@ function paint (data) {
     },
     options.options.responsiveAnimationDuration = 0
 
+    // Annotations
+    if (header == "execTime (ms)") {
+        options.options.annotation = {
+          annotations: [{
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'y-axis-0',
+            value: sla.maxExecTime,
+            borderColor: 'rgb(126, 0, 0)',
+            borderWidth: 4,
+            label: {
+              enabled: false,
+              content: 'Max Exec Time'
+            }
+          }]
+        }
+    }
+    if (header == "Accuracy (%)") {
+        options.options.annotation = {
+          annotations: [{
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'y-axis-0',
+            value: sla.minAccuracy,
+            borderColor: 'rgb(126, 0, 0)',
+            borderWidth: 4,
+            label: {
+              enabled: false,
+              content: 'Min Accuracy'
+            }
+          }]
+        }
+    }
+    if (header == "cost") {
+        options.options.annotation = {
+          annotations: [{
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'y-axis-0',
+            value: sla.maxCost,
+            borderColor: 'rgb(126, 0, 0)',
+            borderWidth: 4,
+            label: {
+              enabled: false,
+              content: 'Max Cost'
+            }
+          }]
+        }
+    }
+
     const chart = new Chart(canvas.getContext('2d'), options)
     chart.meta = { // recursion metadata
       index
     }
   })
-}
-
-// Plot lines over the charts
-function plot_lines() {
-  if (sla == null) return;
-  var execTime_line = new Graph({
-    canvasId: 'chart-execTime (ms)',
-    minX: -10,
-    minY: -10,
-    maxX: 10,
-    maxY: 10,
-    unitsPerTick: 1
-  });
-  execTime_line.drawEquation(function(x) {
-    return sla.maxExecTime;
-  }, 'green', 1);
-
-  var accuracy_line = new Graph({
-    canvasId: 'chart-Accuracy (%)',
-    minX: -10,
-    minY: -10,
-    maxX: 10,
-    maxY: 10,
-    unitsPerTick: 1
-  });
-  accuracy_line.drawEquation(function(x) {
-    return sla.minAccuracy;
-  }, 'green', 1);
-
-  var cost_line = new Graph({
-    canvasId: 'chart-cost',
-    minX: -10,
-    minY: -10,
-    maxX: 10,
-    maxY: 10,
-    unitsPerTick: 1
-  });
-  cost_line.drawEquation(function(x) {
-    return sla.maxCost;
-  }, 'green', 1);
 }
