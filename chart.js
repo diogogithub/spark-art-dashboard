@@ -1,11 +1,13 @@
 // SLA Data
 sla = null
-const request = async () => {
-  const response = await fetch('sla')
-  sla = await response.json();
-  sla = sla[0]
-}
-request();
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+    sla =  this.responseText;
+  }
+};
+xhttp.open("GET", "sla.json", false);
+xhttp.send();
 
 // Charts colors
 const chartColors = [
