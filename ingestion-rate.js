@@ -17,6 +17,6 @@ ws.addEventListener('message', function message(data, flags) {
 document.getElementById("ingestion-rate-update").addEventListener('click', function() {
   if (document.getElementById("ingestion-rate").value != current_ingestion_rate) {
     ws.send(document.getElementById("ingestion-rate").value, {mask: true});
-    current_ingestion_rate = document.getElementById("ingestion-rate").value;
+    current_ingestion_rate = "set::" + document.getElementById("ingestion-rate").value;
   }
 });
