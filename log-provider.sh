@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # last stats file to read from
 FILENAME=$(ls stats-* | tail -n 1)
  
