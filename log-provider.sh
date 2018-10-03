@@ -1,17 +1,26 @@
-#!/bin/bash
+#!/bin/sh
 
-# last stats file to read from
+# CSV file name
 FILENAME=$(ls stats-* | tail -n 1)
- 
-# number of lines to read
+
+# chunk file name
+CHUNK_FILENAME="current-log-provider-chunk.csv"
+
+# number of log lines for chunk
 N=100
- 
-# chunk filename
-CHUNK_FILENAME="log-provider-chunk.csv"
- 
-header=$(head -n 1 $FILENAME)
- 
+
+# server port
+PORT=4870
+
+# CSV header
+header=$(head -n 1 "$FILENAME")
+
 while true; do
-  paste <(echo $header) <(tail -n +2 $FILENAME | tail -n $N) --d '' > $CHUNK_FILENAME
-  { echo -ne "HTTP/1.0 200 OK\r\nContent-Length: $(wc -c $CHUNK_FILENAME)\r\nAccess-Control-Allow-Origin: *\r\n\r"; cat $CHUNK_FILENAME; }  | nc -v -l -p 4870
+ # We don't want repeated headers
+ if [ $(wc -l < "$FILENAME") -gt "$N" ]; then
+   { echo "$header"; tail -n "$N" $FILENAME; } > "$CHUNK_FILENAME"
+ else
+   cp -f -- "$FILENAME" "$CHUNK_FILENAME"
+ fi
+ { echo -ne "HTTP/1.0 200 OK\r\nContent-Length: $(wc -c <"current-log-provider-chunk.csv")\r\nAccess-Control-Allow-Origin: *\r\n\r"; cat "current-log-provider-chunk.csv";  } | nc -v -l -p "$PORT"
 done
