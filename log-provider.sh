@@ -22,5 +22,5 @@ while true; do
  else
    cp -f -- "$FILENAME" "$CHUNK_FILENAME"
  fi
- { echo -ne "HTTP/1.0 200 OK\r\nContent-Length: $(wc -c <"current-log-provider-chunk.csv")\r\nAccess-Control-Allow-Origin: *\r\n\r"; cat "current-log-provider-chunk.csv";  } | nc -v -l -p "$PORT"
+ { printf "HTTP/1.0 200 OK\r\nContent-Type: text/csv\r\nContent-Length: $(wc -c <"$CHUNK_FILENAME")\r\nAccess-Control-Allow-Origin: *\r\n\r\n"; cat "$CHUNK_FILENAME";  } | nc -q 0 -v -l -p "$PORT"
 done
