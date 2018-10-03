@@ -1,13 +1,14 @@
 // SLA Data
 sla = null
-var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = function() {
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 200) {
-    sla =  this.responseText;
+    sla = JSON.parse(this.responseText);
+    sla = sla[0];
   }
 };
-xhttp.open("GET", "sla.json", false);
-xhttp.send();
+xmlhttp.open("GET", "sla.json", false);
+xmlhttp.send();
 
 // Charts colors
 const chartColors = [
